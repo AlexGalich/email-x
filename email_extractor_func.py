@@ -8,8 +8,9 @@ import re
 
 def send_reqeusts(link):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"}
-
-    response = requests.get(link, headers = headers)
+    
+    response = requests.get(link, headers = headers, verify= False)
+   
 
 
     
@@ -88,6 +89,7 @@ def extract_emails(site_url):
     
     for link in all_links:
         
+        # check if domains are matching 
         if company_domain in link:
             try:
                 page_soup = send_reqeusts(link)
