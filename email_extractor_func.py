@@ -9,9 +9,7 @@ import re
 def send_reqeusts(link):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"}
     
-    response = requests.get(link, headers = headers,verify= False)
-   
-
+    response = requests.get(link, headers = headers, verify= False)
 
     
 
@@ -79,19 +77,30 @@ def extract_emails(site_url):
 
     all_emails = []
     company_domain = get_domain('site_url')
+
     urls_dslashed  = site_url.rstrip("/")
 
-  
-    soup = send_reqeusts(site_url)
+    try:
+        soup = send_reqeusts(site_url)
+        
+    except: 
+      
+        return None, None
     
     all_links, facebook = get_all_links(soup, urls_dslashed)
-
+    
     ## NEW PART
     # finisng emails on the first page
-    first_page_emails = find_emails(soup.text)
+    try:
+        
+        first_page_emails = find_emails(soup.text)
+       
 
-    if len(first_page_emails) > 0 :
-        return most_common(first_page_emails), facebook
+        if len(first_page_emails) > 0 :
+            return most_common(first_page_emails), facebook
+    except: 
+        print(f"Information extraction from {site_url} has failed")
+      
     #-----------------------------------------------------
     
     for link in all_links:
@@ -124,8 +133,7 @@ def extract_emails(site_url):
     except: 
         most_common_email = None
 
-    print('The email is: ', most_common_email, 
-          "\nfacebook is: ", facebook)
+    
     
     return most_common_email , facebook
 

@@ -4,8 +4,10 @@ import time
 def main():
     time_1 = time.time()
     email , facebook  = extract_emails(
-    "https://viprealty.ua/"
+    "https://cardinalrealtygroup.com/"
         )
+    
+
     time_2 = time.time()
     print("time for finding", time_2- time_1 )
     print(email, facebook)
