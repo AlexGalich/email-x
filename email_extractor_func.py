@@ -9,7 +9,7 @@ import re
 def send_reqeusts(link):
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"}
     
-    response = requests.get(link, headers = headers, verify= False)
+    response = requests.get(link, headers = headers,verify= False)
    
 
 
@@ -81,16 +81,24 @@ def extract_emails(site_url):
     company_domain = get_domain('site_url')
     urls_dslashed  = site_url.rstrip("/")
 
-
+  
     soup = send_reqeusts(site_url)
-
-
+    
     all_links, facebook = get_all_links(soup, urls_dslashed)
+
+    ## NEW PART
+    # finisng emails on the first page
+    first_page_emails = find_emails(soup.text)
+
+    if len(first_page_emails) > 0 :
+        return most_common(first_page_emails), facebook
+    #-----------------------------------------------------
     
     for link in all_links:
         
         # check if domains are matching 
         if company_domain in link:
+            
             try:
                 page_soup = send_reqeusts(link)
             except:
@@ -98,10 +106,18 @@ def extract_emails(site_url):
 
             emails = find_emails(page_soup.text)
 
+            # check if this page is contact 
+            
             if len(emails) > 0 :
-                for email in emails:
-                    
-                    all_emails.append(email)
+                # NEW PART
+                if "contact" in link:
+                    return most_common(emails), facebook
+                # --------------------------------------------
+                
+                else:
+                    for email in emails:
+                        
+                        all_emails.append(email)
 
     try:
         most_common_email = most_common(all_emails)
